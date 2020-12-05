@@ -58,19 +58,137 @@ function connectDB(){
 		console.log('DB connected : ' + databaseUrl);
 
 		//Assign to Variable
-		database = db;
+		database = db.db('local');
 	});
+}
+
+//User Authentication Function
+var authUser = function(database, id, password, callback){
+	console.log('authUser called');
+
+	//User Collection Reference
+	var users = database.collection('users');
+
+	//Search using id and password
+	users.find({"id" : id, "password" : password}).toArray(function(err, docs){
+		if(err){
+			callback(err, null);
+			return;
+		}
+
+		if(docs.length > 0){
+			console.log('ID : [%s], PW : [%s] Matching User Found', id, password);
+			callback(null, docs);
+		}else{
+			console.log('No Matching User Found');
+			callback(null, null);
+		}
+	});
+}
+
+//User Add Function
+var addUser = function(database, id, password, name, callback){
+	console.log('addUser called');
+	
+	//User Collection Reference
+	var users = database.collection('users');
+
+	//Add User using id, password, name
+	users.insertOne({
+		id : id,
+		password : password,
+		name : name
+	}, function(err, result){
+		if(err){
+			callback(err, null);
+			return;
+		}
+
+		console.log('User Record Added -> ' + id);
+		callback(result);
+	})	
 }
 
 //Router Object Reference
 var router = express.Router();
 
-//Login Routing Function- Compare to Database Information
+//Login Routing Function - Compare to Database Information
 router.route('/process/login').post(function(req, res){
 	condole.log('/process/login called');
 
+	var paramId = req.body.id;
+	var paramPassword = req.body.password;
 
+	var callback = function(docs){
+		if(docs){
+			console.log('Login Success -> ' + docs[0].id);
+
+			//Put Information in a Session
+			req.session.user = {
+				id : docs[0].id,
+				name : docs[0].name
+			}
+
+			console.dir(req.session.user);
+
+			//Go to the Product Inquert Page
+			res.redirect('/public/product.html');
+		}
+		else{
+			console.log('Login Fail');
+
+			//Go to the Login Page
+			res.redirect('/public/login.html');
+		}
+	}
+
+	authUser(database, paramId, paramPassword, callback);
 });
+
+//Add User Routing Function 
+router.route('/process/register').post(function (req, res){
+	console.log('/process/adduser called');
+
+	var paramId = req.body.id;
+	var paramPassword = req.body.password;
+	var paramName = req.body.name;
+
+	console.log('Parameter -> ' + paramId + ' || ' + paramPassword + ' || ' + paramName);
+
+	addUser(database, paramId, paramPassword, paramName, function(result){
+		
+		//Go to the Login Page
+		res.redirect('/public/login.html');
+	});
+})
+
+//Product Routing Function
+router.route('/process/product').get(function (req, res) {
+	console.log('/process/product called');
+
+	if(req.session.user) //Already logged in
+	{ 
+		res.redirect('/public/product.html')
+	}else { //Not logged in
+		res.redirect('/public/login.html')
+
+	}
+})
+
+//Logout Routing Function
+router.route('/process/logout').get(function (req, res) {
+	console.log('/process/logout called');
+
+	if (req.session.user) {
+		req.session.destroy(function (err) {
+			if(err) { throw err;}
+
+			res.redirect('/public/login.html');
+		})
+	} else {
+		res.redirect('/public/login.html');
+	}
+})
 
 //Register Router Object
 app.use('/', router);
