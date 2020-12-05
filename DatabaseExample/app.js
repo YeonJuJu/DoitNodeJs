@@ -78,10 +78,10 @@ var authUser = function(database, id, password, callback){
 
 		if(docs.length > 0){
 			console.log('ID : [%s], PW : [%s] Matching User Found', id, password);
-			callback(null, docs);
+			callback(docs);
 		}else{
 			console.log('No Matching User Found');
-			callback(null, null);
+			callback(null);
 		}
 	});
 }
@@ -114,7 +114,7 @@ var router = express.Router();
 
 //Login Routing Function - Compare to Database Information
 router.route('/process/login').post(function(req, res){
-	condole.log('/process/login called');
+	console.log('/process/login called');
 
 	var paramId = req.body.id;
 	var paramPassword = req.body.password;
@@ -146,7 +146,7 @@ router.route('/process/login').post(function(req, res){
 });
 
 //Add User Routing Function 
-router.route('/process/register').post(function (req, res){
+router.route('/process/adduser').post(function (req, res){
 	console.log('/process/adduser called');
 
 	var paramId = req.body.id;
