@@ -7,13 +7,14 @@ module.exports = {
 	server_port: 3000,
 	db_url: 'mongodb://localhost:27017/local',
 	db_schemas: [
-	    {file:'./user_schema', collection:'users', schemaName:'UserSchema', modelName:'UserModel'}
-	    , {file:'./post_schema', collection:'posts', schemaName:'PostSchema', modelName:'PostModel'}
+	    {file:'./user_schema', collection:'users7', schemaName:'UserSchema', modelName:'UserModel'}
+	    , {file:'./post_schema', collection:'posts7', schemaName:'PostSchema', modelName:'PostModel'}
 	],
 	route_info: [
 		{file: './post', path: '/process/addpost', type: 'post', method: 'addPost'}
 		, {file: './post', path: '/process/showpost/:id', type: 'get', method: 'showPost'}
 		, {file: './post', path: '/process/listpost', type: 'get', method: 'listPost'}
+		, {file: './post', path: '/process/listpost', type: 'post', method: 'listPost'}
 	],
 	facebook: {		// passport facebook
 		clientID: '1150257705369153',

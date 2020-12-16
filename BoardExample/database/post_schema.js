@@ -13,7 +13,7 @@ Schema.createSchema = function(mongoose) {
 	var PostSchema = mongoose.Schema({
 		title: {type: String, required: true, trim: true}
 		, contents: {type: String, required: true, trim: true}
-		, writer: {type: mongoose.Schema.ObjectId, ref:'users'}
+		, writer: {type: mongoose.Schema.ObjectId, ref:'users7'}
 	    , created_at: {type: Date, index: {unique: false}, 'default': Date.now}
 	    , updated_at: {type: Date, index: {unique: false}, 'default': Date.now}
 	    , comments: [{
